@@ -1,13 +1,20 @@
 import './App.css'
+import { Router,Routes, Route } from 'react-router-dom'
+import SignupPage from './pages/SignupPage'
+import Home from './pages/Home'
+import LoginPage from './pages/LoginPage'
 
 function App() {
   
 
   return (
     <>
-    <h1 className='text-amber-300'>
-      Hwllo
-    </h1>
+    <Routes>
+      <Route path='/' element={<Home/>}/>
+      <Route path='/signup' element={<SignupPage/>}/>
+      <Route path='/login' element={<LoginPage/>}/>
+    </Routes>
+    
      
     </>
   )
