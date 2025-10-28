@@ -35,6 +35,8 @@ export const summarizedText = async (req, res) => {
             finalSummary = words.slice(0, wordLimit).join(" ") + "...";
         } 
 
+        //user id should be added
+
         const summary = await summaryModel.create({
             orignalText: text,
             summarizedText: finalSummary,
