@@ -1,33 +1,35 @@
 import mongoose from "mongoose";
 
-// Making User Schema
-
 const userSchema = new mongoose.Schema(
-    {
-        email:{
-            type: String,
-            required: true,
-            unique: true,
-
-        },
-
-        fullName:{
-            type: String,
-            required: true,
-
-
-        },
-
-        password:{
-            type: String,
-            required: true,
-            minlength: 6,
-
-        },
-
-
+  {
+    fullName: {
+      type: String,
+      required: true,
     },
-    {timestamps: true}
+
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
+    password: {
+      type: String,
+      minlength: 6,
+      // Not required for Google users
+    },
+
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // allows null values but keeps uniqueness when present
+    },
+
+    profilePic: {
+      type: String, // optional: store user's Google profile picture
+    },
+  },
+  { timestamps: true }
 );
 
 const User = mongoose.model("User", userSchema);
