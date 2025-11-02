@@ -4,47 +4,50 @@ import { AUTH_BASE_URL } from '../Services/config';
 import axios from 'axios';
 import toast from "react-hot-toast";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from '../context/authcontext';
 
 function LoginPage() {
 
   const navigate = useNavigate();
+  const { loginUser } = useAuth();
+
 
 const [email, setEmail] = useState("");
 const [password, setPassword] =useState("");
 const[loading, setLoading] = useState("");
 
 async function handleLogin(e) {
-
   e.preventDefault();
   setLoading(true);
 
   try {
     const res = await axios.post(
-
       `${AUTH_BASE_URL}/login`,
-      {email,password},
-      {withCredentials:true} 
-
+      { email, password },
+      { withCredentials: true }
     );
 
-    if(res.status === 200){
-      toast.success("Login Succesfully");
-      console.log("User data", res.data)
+    if (res.status === 200) {
+      toast.success("Login Successfully");
+      console.log("User data", res.data);
+
+      
+      loginUser(res.data);
+
+      
       navigate("/");
     }
   } catch (error) {
     console.error("Login error", error);
 
-    if(error.response.status === 401){
-      toast.error("Invalid Credentials. Please try Again")
-    } else{
+    if (error.response?.status === 401) {
+      toast.error("Invalid Credentials. Please try again");
+    } else {
       toast.error("Network Error. Please check your connection");
     }
-    
-  }finally{
+  } finally {
     setLoading(false);
   }
-  
 }
 
 

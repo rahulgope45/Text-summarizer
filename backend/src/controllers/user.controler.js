@@ -69,7 +69,7 @@ export const login = async(req,res) =>{
         }
         genrateToken(user._id,res)
         res.status(200).json({
-         _id: user.email,
+         _id: user._id,
          fullName: user.fullName,
          email: user.email,
         })
@@ -106,4 +106,21 @@ export const checkAuth = async (req,res)=>{
         
     }
     
+}
+
+export const getMe = async (req,res) =>{
+    try {
+        if(!req.user){
+            return res.status(401).json({
+                error: "UnAuthorized"
+            });
+        }
+        res.json({user: req.user })
+    } catch (error) {
+        res.status(500).json({
+            error: "Server error"
+        })
+
+        
+    }
 }

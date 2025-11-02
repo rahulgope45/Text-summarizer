@@ -1,5 +1,5 @@
 import express from 'express';
-import { login, signup, logout, checkAuth } from '../controllers/user.controler.js';
+import { login, signup, logout, checkAuth, getMe } from '../controllers/user.controler.js';
 import { protectRoute } from '../middleware/auth.middleware.js';
 import passport from "passport";
 import { genrateToken } from '../config/utils.js'; // ADD THIS IMPORT
@@ -53,5 +53,7 @@ router.get(
     }
   }
 );
+
+router.get("/me", protectRoute, getMe);
 
 export default router;

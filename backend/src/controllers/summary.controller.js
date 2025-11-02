@@ -2,13 +2,21 @@ import summaryModel from "../models/summary.model.js";
 import axios from "axios";
 
 export const summarizedText = async (req, res) => {
+    
     try {
         const { text, wordLimit } = req.body;
+        const userId = req.user?._id || req.body.userId;
 
         if (!text) {
             return res.status(400).json({
                 error: "Text is rquired"
             });
+        }
+
+        if(!userId){
+            return res.status(400).json({
+                error: "User Id is missing"
+            })
         }
 
         // HF API
@@ -39,13 +47,16 @@ export const summarizedText = async (req, res) => {
 
         const summary = await summaryModel.create({
             orignalText: text,
-            summarizedText: finalSummary,
+            summarizedText: summaryText,
             wordLimit,
+            user: userId,
         })
 
         res.json({
-            summaryText: summary.summarizedText
-        });
+            summaryText: summary.summarizedText,
+            id: summary._id,
+            createdAt: summary.createdAt,
+        })
 
     } catch (error) {
         console.error("Summarization error:", error.response?.data || error.message);
@@ -56,3 +67,44 @@ export const summarizedText = async (req, res) => {
 
     }
 }
+
+export const getUserSummaries = async (req,res) =>{
+    try {
+        const userId = req.user?._id || req.params.userId;
+
+        const summaries = await summaryModel
+        .find({user: userId})
+        .sort({createdAt: -1});
+
+        res.json(summaries);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch summaries"});
+        
+    }
+}
+
+export const deleteSummary = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?._id;
+
+   
+    const summary = await summaryModel.findById(id);
+
+    if (!summary) {
+      return res.status(404).json({ error: "Summary not found" });
+    }
+
+    
+    if (summary.user.toString() !== userId.toString()) {
+      return res.status(403).json({ error: "Not authorized to delete this summary" });
+    }
+
+    await summaryModel.findByIdAndDelete(id);
+
+    res.json({ message: "Summary deleted successfully" });
+  } catch (error) {
+    console.error("Delete summary error:", error);
+    res.status(500).json({ error: "Failed to delete summary" });
+  }
+};

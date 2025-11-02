@@ -54,7 +54,7 @@ async function handleSignup(e){
               <label className="block text-sm font-bold uppercase mb-2">Name</label>
               <input
                 type="text"
-                placeholder="EMAIL"
+                placeholder="NAME"
                 className="w-full border-2 border-black bg-transparent p-2 text-black placeholder-black focus:outline-none focus:bg-black focus:text-white"
                 onChange={(e) => setUserName(e.target.value) }
 

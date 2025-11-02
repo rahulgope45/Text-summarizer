@@ -16,6 +16,11 @@ const summarySchema = new mongoose.Schema(
             type: Number,
             default: 100,
         },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        }
     },
     {
         timestamps: true

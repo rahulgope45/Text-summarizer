@@ -30,6 +30,7 @@ connectDB()
 
 
 app.use("/api",summaryRoutes); 
+
 app.use("/api/auth",authRoutes);
 
 
