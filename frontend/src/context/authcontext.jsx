@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { AUTH_BASE_URL } from "../Services/config";
 
 const AuthContext = createContext();
 
@@ -10,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.post("http://localhost:3002/api/auth/check", {}, { withCredentials: true });
+        const res = await axios.post(`${AUTH_BASE_URL}/check`, {}, { withCredentials: true });
         setUser(res.data);
       } catch (err) {
         setUser(null);
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const logoutUser = async () =>{
     try {
-        await axios.post("http://localhost:3002/api/auth/logout",{},{
+        await axios.post(`${AUTH_BASE_URL}/logout`,{},{
             withCredentials:true
         })
         

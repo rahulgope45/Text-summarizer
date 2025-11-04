@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import menu from '/Menu.png'
 import account3 from '/usericon.png'
 import { NavLink, useNavigate } from 'react-router-dom'
@@ -7,8 +7,29 @@ import { AUTH_BASE_URL } from '../Services/config'
 
 function Navbar2() {
   const [isOpen, setIsOpen] = useState(false)
-  const [user, setUser] = useState(null)
+  
+  const [User, setUser] = useState(null)
   const navigate = useNavigate()
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${AUTH_BASE_URL}/me`, {
+          withCredentials: true,
+        })
+        setUser(res.data.user)
+      } catch (error) {
+        setUser(null)
+      }
+    }
+    fetchUser()
+  }, [])
+
+  const handleLogout = async () => {
+    await logoutUser()
+    navigate('/login')
+  }
 
   return (
     <div className="bg-white text-black font-mono border-b-4 border-black px-6 py-4 flex items-center justify-between sticky top-0 z-50">
@@ -36,9 +57,8 @@ function Navbar2() {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white border-r-4 border-black transform ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-none z-50`}
+        className={`fixed top-0 left-0 h-full w-64 bg-white border-r-4 border-black transform ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          } transition-none z-50`}
       >
         <button
           onClick={() => setIsOpen(false)}
@@ -51,6 +71,18 @@ function Navbar2() {
           <NavLink to="/quiz" className="border-b-2 border-black pb-1">
             About Us
           </NavLink>
+          {User ? (
+            <button
+              onClick={handleLogout}
+              className="text-left border-t-2 border-black pt-2 text-red-600"
+            >
+              Logout
+            </button>
+          ) : (
+            <NavLink to="/signup" className="border-t-2 border-black pt-2">
+              Signup / Login
+            </NavLink>
+          )}
         </nav>
       </div>
 
