@@ -1,10 +1,10 @@
 export const AUTH_BASE_URL = 
 import.meta.env.MODE === "production"
  ? ""
- : "http://localhost:3003/api/auth";
+ : "http://localhost:3002/api/auth";
 
 
  export const SUMMARY_BASE_URL =
  import.meta.env.MODE === "production"
  ? ""
- : "http://localhost:3003/api"
+ : "http://localhost:3002/api"
