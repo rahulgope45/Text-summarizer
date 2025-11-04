@@ -1,5 +1,10 @@
+import { getRedisClient } from "../config/redis.js";
 import summaryModel from "../models/summary.model.js";
 import axios from "axios";
+
+
+const CACHE_EXPIRY = 3600;
+
 
 export const summarizedText = async (req, res) => {
     
@@ -9,7 +14,7 @@ export const summarizedText = async (req, res) => {
 
         if (!text) {
             return res.status(400).json({
-                error: "Text is rquired"
+                error: "Text is required"
             });
         }
 
@@ -52,6 +57,12 @@ export const summarizedText = async (req, res) => {
             user: userId,
         })
 
+        //Adding Redis cache here for the user
+        const redis = getRedisClient();
+        if(redis) {
+            await redis.del(`user:${userId}:summaries`);
+        }
+
         res.json({
             summaryText: summary.summarizedText,
             id: summary._id,
@@ -72,9 +83,31 @@ export const getUserSummaries = async (req,res) =>{
     try {
         const userId = req.user?._id || req.params.userId;
 
+        //redis work  going here created acacheKey
+        const cacheKey = `user:${userId}:summaries`;
+
+        const redis = getRedisClient();
+
+        //trying to get cache first 
+        if(redis){
+            const cacheData = await redis.get(cacheKey);
+            if(cacheData){
+                console.log('Cache hit for user summaries');
+                return res.json(JSON.parse(cacheData));
+            }
+        }
+
+        console.log('Cache miss fetching from database');
+
+
         const summaries = await summaryModel
         .find({user: userId})
         .sort({createdAt: -1});
+         
+        // here here
+        if(redis){
+            await redis.setEx(cacheKey, CACHE_EXPIRY, JSON.stringify(summaries));
+        }
 
         res.json(summaries);
     } catch (error) {
@@ -101,6 +134,12 @@ export const deleteSummary = async (req, res) => {
     }
 
     await summaryModel.findByIdAndDelete(id);
+
+    //Invalidate cacheingg
+    const redis = getRedisClient();
+    if(redis){
+        await redis.del(`user:${userId}:summaries`)
+    }
 
     res.json({ message: "Summary deleted successfully" });
   } catch (error) {

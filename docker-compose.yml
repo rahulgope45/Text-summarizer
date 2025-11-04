@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "3003:3002"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/:/app
+    command: npm run dev
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5174"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - app-network
+
+volumes:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge

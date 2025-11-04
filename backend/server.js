@@ -6,7 +6,7 @@ import { connectDB } from './src/config/db.js';
 import summaryRoutes from "./src/routes/summary.route.js"
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-
+import { connectRedis, disconnectedRedis } from './src/config/redis.js';
 
 import authRoutes from "./src/routes/auth.route.js"
 
@@ -16,7 +16,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     credentials: true
 }));
 app.use(cookieParser());
@@ -26,7 +26,8 @@ import("./src/config/passport.js");
 //Frontend
 
 
-connectDB()
+connectDB();
+connectRedis();
 
 
 app.use("/api",summaryRoutes); 
@@ -42,3 +43,16 @@ const PORT = process.env.PORT ;
 app.listen(PORT, () =>{
     console.log(`Server is running at ${PORT}`)
 });
+
+
+process.on('SIGTERM', async () => {
+    console.log('SIGTERM received, closing server...')
+    await disconnectedRedis();
+    server.close(() =>{
+        console.log('Server closed')
+        process.exit(0)
+    }) 
+})
+
+
+export default app;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import { SUMMARY_BASE_URL } from '../Services/config'
 
 function Home() {
   const [text, setText] = useState("")
@@ -14,7 +15,7 @@ function Home() {
     try {
       setLoading(true)
       const res = await axios.post(
-        "http://localhost:3002/api/summary",
+        `${SUMMARY_BASE_URL}/summary`,
         { text, wordLimit: 100 },
         { withCredentials: true }
       )

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
+import { SUMMARY_BASE_URL } from "../Services/config"
 
 function History() {
   const [summaries, setSummaries] = useState([])
@@ -8,7 +9,7 @@ function History() {
   useEffect(() => {
     const fetchSummaries = async () => {
       try {
-        const res = await axios.get("http://localhost:3002/api/history", {
+        const res = await axios.get(`${SUMMARY_BASE_URL}/history`, {
           withCredentials: true,
         })
         setSummaries(res.data)
@@ -24,7 +25,7 @@ function History() {
 
  const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3002/api/history/${id}`, {
+      await axios.delete(`${SUMMARY_BASE_URL}/history/${id}`, {
         withCredentials: true,
       });
       // Update UI instantly
