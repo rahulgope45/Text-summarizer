@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import axios from 'axios'
-import { SUMMARY_BASE_URL } from '../Services/config'
+import api from '../Services/api'  // Use api instance instead of axios
 
 function Home() {
   const [text, setText] = useState("")
@@ -14,15 +13,18 @@ function Home() {
     }
     try {
       setLoading(true)
-      const res = await axios.post(
-        `${SUMMARY_BASE_URL}/summary`,
-        { text, wordLimit: 100 },
-        { withCredentials: true }
-      )
+      const res = await api.post('/api/summary', { 
+        text, 
+        wordLimit: 100 
+      })
       setSummary(res.data.summaryText)
     } catch (err) {
       console.error(err)
-      alert("Failed to summarize")
+      if (err.response?.status === 401) {
+        alert("Please login first")
+      } else {
+        alert("Failed to summarize")
+      }
     } finally {
       setLoading(false)
     }
