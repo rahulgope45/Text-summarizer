@@ -1,34 +1,39 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import menu from '/Menu.png'
 import account3 from '/usericon.png'
 import { NavLink, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import api from '../Services/api' // Use the axios instance
 import { AUTH_BASE_URL } from '../Services/config'
 
 function Navbar2() {
   const [isOpen, setIsOpen] = useState(false)
-  
   const [User, setUser] = useState(null)
   const navigate = useNavigate()
-
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${AUTH_BASE_URL}/me`, {
-          withCredentials: true,
-        })
-        setUser(res.data.user)
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setUser(null);
+          return;
+        }
+
+        const res = await api.get(`/api/auth/me`);
+        setUser(res.data.user);
       } catch (error) {
-        setUser(null)
+        console.error('Failed to fetch user:', error);
+        setUser(null);
+        localStorage.removeItem('token'); // Clear invalid token
       }
     }
     fetchUser()
   }, [])
 
   const handleLogout = async () => {
-    await logoutUser()
-    navigate('/login')
+    localStorage.removeItem('token');
+    setUser(null);
+    navigate('/login');
   }
 
   return (
@@ -48,6 +53,7 @@ function Navbar2() {
 
       {/* Right - Account */}
       <div className="flex items-center gap-2">
+        {User && <span className="text-sm">{User.email}</span>}
         <img
           src={account3}
           alt="account"
@@ -57,8 +63,9 @@ function Navbar2() {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white border-r-4 border-black transform ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          } transition-none z-50`}
+        className={`fixed top-0 left-0 h-full w-64 bg-white border-r-4 border-black transform ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } transition-none z-50`}
       >
         <button
           onClick={() => setIsOpen(false)}

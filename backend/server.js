@@ -16,8 +16,14 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: "https://text-summarizer-beryl.vercel.app",
-    credentials: true
+    origin: [
+        "https://text-summarizer-beryl.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:5174"
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(cookieParser());
 app.use(passport.initialize()); 
