@@ -17,7 +17,7 @@ const app = express();
 app.use(express.json());
 app.use(cors({
     origin: [
-        "https://text-summarizer-beryl.vercel.app",
+        "https://text-summarizer-a8xvtai1u-rahulgope45s-projects.vercel.app",
         "http://localhost:5173",
         "http://localhost:5174"
     ],
