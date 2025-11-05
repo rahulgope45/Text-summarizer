@@ -79,7 +79,7 @@ function Navbar2() {
               Logout
             </button>
           ) : (
-            <NavLink to="/signup" className="border-t-2 border-black pt-2">
+            <NavLink to="/signup">
               Signup / Login
             </NavLink>
           )}
