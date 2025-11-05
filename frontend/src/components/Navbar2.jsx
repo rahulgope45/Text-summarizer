@@ -79,7 +79,7 @@ function Navbar2() {
               Logout
             </button>
           ) : (
-            <NavLink to="/signup">
+            <NavLink to="/signup" className="cursor-pointer">
               Signup / Login
             </NavLink>
           )}
